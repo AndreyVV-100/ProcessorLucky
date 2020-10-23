@@ -1,1 +1,67 @@
-﻿
+﻿#include "Assembler.h"
+
+int main()
+{
+    Text code = {};
+    ConstructorText (&code, "CompileFiles/code.txt");
+
+    CreateMachineCode (&code, "CompileFiles/mach.txt");
+
+    DestructorText (&code);
+
+    return 0;
+}
+
+void CreateMachineCode (Text* code, const char* out_name)
+{
+    assert (code);
+    assert (out_name);
+
+    char* file_out = (char*) calloc (code->size_text, sizeof (*file_out));
+    size_t bytes = 0;
+
+    for (size_t i_line = 0; i_line < code->n_empty_lines; i_line++)
+    {
+        if (ProcessLine (code->lines[i_line].point, file_out, &bytes))
+        {
+            printf ("Error of compilation in line %d.", code->lines[i_line].position);
+            exit (1);
+        }
+    }
+
+    FILE* file = fopen (out_name, "wb");
+    assert (file);
+
+    fprintf (file, "AVV0.1");
+    fwrite (&bytes, sizeof (bytes), 1, file);
+    fwrite (file_out, sizeof (*file_out), bytes, file);
+    fclose (file);
+
+    printf ("Compiling is successful!");
+    return;
+}
+
+int ProcessLine (char* command, char* file_out, size_t* bytes)
+{
+    assert (command);
+    assert (file_out);
+    
+    char* check_comment = strchr (command, ';');
+    if (check_comment != nullptr)
+        *check_comment = '\0';
+
+    char cmd[10] = "";
+    sscanf (command, " %s", cmd);
+    if (*cmd == '\0')
+        return 0;
+
+    #define DEV_CMD(name, num) if (strcmp(cmd, name) == 0) {                     \
+                                        sprintf (file_out + *bytes, "%c", num);  \
+                                        (*bytes)++;                              \
+                                        } else
+    #include "../Commands.h"
+    #undef DEV_CMD
+    /*else*/ return 1;
+
+    return 0;
+}

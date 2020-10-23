@@ -13,4 +13,4 @@ enum commands
 
 void CreateMachineCode (Text* code, const char* out_name);
 
-int ProcessLine (char* command, char* file_out);
+int ProcessLine (char* command, char* file_out, size_t* bytes);
