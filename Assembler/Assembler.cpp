@@ -50,18 +50,18 @@ int ProcessLine (char* command, char* file_out, size_t* bytes)
     if (check_comment != nullptr)
         *check_comment = '\0';
 
-    char cmd[10] = "";
+    char get_cmd[10] = "";
     int shift = -1;
-    sscanf (command, " %s%n", cmd, &shift);
-    if (*cmd == '\0')
+    sscanf (command, " %s%n", get_cmd, &shift);
+    if (*get_cmd == '\0')
         return 0;
 
-    #define DEV_CMD(name, num, cmd) if (strcmp(cmd, name) == 0) {                \
+    #define DEV_CMD(name, num, cmd) if (strcmp(get_cmd, name) == 0) {                \
                                         sprintf (file_out + *bytes, "%c", num);  \
                                         (*bytes)++;                              \
                                         } else
 
-    #define DEV_CMD_ARG(name, num, cmd) if (strcmp(cmd, name) == 0) {               \
+    #define DEV_CMD_ARG(name, num, cmd) if (strcmp(get_cmd, name) == 0) {               \
                                         sprintf (file_out + *bytes, "%c", num);     \
                                         (*bytes)++;                                 \
                                         double put_arg = NAN;                       \
