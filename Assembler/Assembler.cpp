@@ -68,8 +68,8 @@ int ProcessLine (char* command, char* file_out, size_t* bytes)
                         int check_arg = sscanf (command + shift, " %lf", &put_arg); \
                                         if (check_arg < 1)                          \
                                             return 1;                               \
-                                        sprintf (file_out + *bytes, "%lf", put_arg);\
-                                        (*bytes) += 8;                              \
+                                        PrintDouble (file_out + *bytes, put_arg);   \
+                                        (*bytes) += sizeof(put_arg);                \
                                         } else
 
     #include "../Commands.h"
@@ -78,4 +78,16 @@ int ProcessLine (char* command, char* file_out, size_t* bytes)
     /*else*/ return 1;
 
     return 0;
+}
+
+void PrintDouble (char* buffer, double num)
+{
+    assert (buffer);
+    assert (!isnan (num));
+
+    char* ch_num = (char*) &num;
+    for (size_t i_byte = 0; i_byte < sizeof (num); i_byte++)
+        sprintf (buffer + i_byte, "%c", ch_num[i_byte]);
+
+    return;
 }

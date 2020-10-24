@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Text.h"
+#include "../Libraries/Text/Text.h"
 #include <math.h>
 
 /*
@@ -15,3 +15,5 @@ enum commands
 void CreateMachineCode (Text* code, const char* out_name);
 
 int ProcessLine (char* command, char* file_out, size_t* bytes);
+
+void PrintDouble (char* buffer, double num);

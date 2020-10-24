@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Assembler.cpp">
+    <ClCompile Include="Machine.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\Stack\Stack.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="..\Libraries\Text\Text.cpp">
@@ -23,10 +26,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Assembler.h">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="..\Libraries\Stack\Stack.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="..\Libraries\Text\Text.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Machine.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>

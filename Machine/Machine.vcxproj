@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5b4698dc-06d4-40df-9fdb-dd5e05cd563c}</ProjectGuid>
-    <RootNamespace>Assembler</RootNamespace>
+    <ProjectGuid>{e7a6070b-cb08-4787-a58c-a47475ad21ad}</ProjectGuid>
+    <RootNamespace>Machine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,12 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Libraries\Stack\Stack.cpp" />
     <ClCompile Include="..\Libraries\Text\Text.cpp" />
-    <ClCompile Include="Assembler.cpp" />
+    <ClCompile Include="Machine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Libraries\Stack\Stack.h" />
     <ClInclude Include="..\Libraries\Text\Text.h" />
-    <ClInclude Include="Assembler.h" />
+    <ClInclude Include="Machine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
