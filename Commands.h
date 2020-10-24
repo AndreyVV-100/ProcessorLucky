@@ -1,4 +1,4 @@
-DEV_CMD("push", 1)
+DEV_CMD_ARG("push", 1,)
 
 DEV_CMD("pop",  2)
 

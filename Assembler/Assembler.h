@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Text.h"
+#include <math.h>
 
 /*
 enum commands
