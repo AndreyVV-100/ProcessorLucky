@@ -17,35 +17,31 @@ void CreateMachineCode (Text* code, const char* out_name)
     assert (code);
     assert (out_name);
 
-    char* file_out = (char*) calloc (code->size_text, sizeof (*file_out));
-    size_t bytes = 0;
+    CreatorCode crc = {};
+
+    CrcConstructor (&crc, code->size_text);
 
     for (size_t i_line = 0; i_line < code->n_empty_lines; i_line++)
     {
-        if (ProcessLine (code->lines[i_line].point, file_out, &bytes))
+        if (ProcessLine (code->lines[i_line].point, &crc))
         {
             printf ("Assemblering error in line %d.", code->lines[i_line].position);
-            exit (1);
+            CrcDestructor (&crc);
+            return;
         }
     }
 
-    FILE* file = fopen (out_name, "wb");
-    assert (file);
+    CrcOutput (&crc, out_name);
+    CrcDestructor (&crc);
 
-    fprintf (file, "AVV0.1");
-    fwrite (&bytes, sizeof (bytes), 1, file);
-    fwrite (file_out, sizeof (*file_out), bytes, file);
-    fclose (file);
-
-    free (file_out);
     printf ("Assemblering was successful!");
     return;
 }
 
-int ProcessLine (char* command, char* file_out, size_t* bytes)
+int ProcessLine (char* command, CreatorCode* crc)
 {
     assert (command);
-    assert (file_out);
+    assert (crc);
     
     char* check_comment = strchr (command, ';');
     if (check_comment != nullptr)
@@ -57,20 +53,16 @@ int ProcessLine (char* command, char* file_out, size_t* bytes)
     if (*get_cmd == '\0')
         return 0;
 
-    #define DEV_CMD(name, num, cmd) if (strcmp(get_cmd, name) == 0) {            \
-                                        sprintf (file_out + *bytes, "%c", num);  \
-                                        (*bytes)++;                              \
+    #define DEV_CMD(name, num, cmd) if (strcmp(get_cmd, name) == 0) {                   \
+                                        sprintf (crc->mach + crc->bytes, "%c", num);    \
+                                        crc->bytes++;                                   \
                                         } else
 
-    #define DEV_CMD_ARG(name, num, cmd) if (strcmp(get_cmd, name) == 0) {           \
-                                        sprintf (file_out + *bytes, "%c", num);     \
-                                        (*bytes)++;                                 \
-                                        double put_arg = NAN;                       \
-                        int check_arg = sscanf (command + shift, " %lf", &put_arg); \
-                                        if (check_arg < 1)                          \
-                                            return 1;                               \
-                                        PrintDouble (file_out + *bytes, put_arg);   \
-                                        (*bytes) += sizeof(put_arg);                \
+    #define DEV_CMD_ARG(name, num, cmd) if (strcmp(get_cmd, name) == 0) {               \
+                                            sprintf (crc->mach + crc->bytes, "%c", num);\
+                                            crc->bytes++;                               \
+                                            if (GetArg (crc, command + shift))          \
+                                                return 1;                               \
                                         } else
 
     #include "../Commands.h"
@@ -91,4 +83,87 @@ void PrintDouble (char* buffer, double num)
         sprintf (buffer + i_byte, "%c", ch_num[i_byte]);
 
     return;
+}
+
+void CrcConstructor (CreatorCode* crc, size_t code_size)
+{
+    assert (crc);
+    assert (code_size);
+    
+    crc->mach   = (char*) calloc (code_size,     sizeof (char));
+    crc->report = (char*) calloc (code_size * 5, sizeof (char));
+    size_t bytes = 0;
+
+    assert (crc->mach);
+    assert (crc->report);
+
+    return;
+}
+
+void CrcDestructor (CreatorCode* crc)
+{
+    assert (crc);
+    
+    free (crc->mach);
+    free (crc->report);
+
+    crc->mach   = nullptr;
+    crc->report = nullptr;
+    crc->bytes  = 0;
+
+    return;
+}
+
+void CrcOutput (CreatorCode* crc, const char* out_name)
+{
+    assert (crc);
+
+    FILE* file = fopen (out_name, "wb");
+    assert (file);
+
+    fprintf (file, "%s", SIGNATURE);
+    fwrite (&(crc->bytes), sizeof (crc->bytes), 1, file);
+    fwrite (crc->mach, sizeof (*(crc->mach)), crc->bytes, file);
+    fclose (file);
+
+    file = fopen ("../Codes/AssemblerLog.txt", "w");
+    assert (file);
+    fwrite (crc->report, sizeof (*(crc->report)), crc->size_report, file);
+    fclose (file);
+
+    return;
+}
+
+int GetArg (CreatorCode* crc, const char* command)
+{
+    assert (crc);
+    assert (command);
+
+    double put_arg_d = NAN;                           
+    
+    //*(crc->mach + crc->bytes - 1) == 2 - command is pop
+
+    if (sscanf (command, " %lf", &put_arg_d) < 1 || *(crc->mach + crc->bytes - 1) == 2)
+    {
+        char put_arg_s[50] = "";
+        if (sscanf (command, " %s", put_arg_s))
+        {
+            #define STR_CMP(name, num) if (strcmp(name, put_arg_s) == 0) {              \
+                                            *(crc->mach + crc->bytes - 1) |= 0b1000000; \
+                                            sprintf (crc->mach + crc->bytes, "%c", num);\
+                                            return 0; }
+            #include "Registers.h"
+            #undef STR_CMP
+            
+            //null pop
+            if (*(crc->mach + crc->bytes - 1) == 2 && *put_arg_s == '\0')
+                return 0;
+        }
+        return 1;
+    }
+
+    *(crc->mach + crc->bytes - 1) |= 0b100000;
+    PrintDouble (crc->mach + crc->bytes, put_arg_d);  
+    crc->bytes += sizeof (put_arg_d);
+    return 0;
 }

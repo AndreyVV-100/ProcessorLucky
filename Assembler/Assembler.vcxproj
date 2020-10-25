@@ -143,8 +143,10 @@
     <ClCompile Include="Assembler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Libraries\BinaryText\BinaryText.h" />
     <ClInclude Include="..\Libraries\Text\Text.h" />
     <ClInclude Include="Assembler.h" />
+    <ClInclude Include="Registers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

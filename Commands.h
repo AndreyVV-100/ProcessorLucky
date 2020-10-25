@@ -5,7 +5,7 @@ DEV_CMD_ARG ("push", 1,
         byte_now += sizeof (double);
     })
 
-DEV_CMD ("pop", 2,
+DEV_CMD_ARG ("pop", 2,
     {
         DO_POP;
         ass
