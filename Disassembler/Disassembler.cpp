@@ -38,11 +38,18 @@ void CreateAssemblerCode (char* mach, const char* file_name)
     {
         switch (mach[i_byte])
         {
-            #define DEV_CMD(name, num, cmd) case (num): { sprintf (code_now, "%s\n%n", name, &shift);   \
-                                                code_now += shift;                                  \
-                                                break;  }
+            #define DEV_CMD(name, num, cmd) case (num): { sprintf (code_now, "%s\n%n",  \
+                                                                   name, &shift);       \
+                                                        code_now += shift;              \
+                                                        break;  }
 
-            #define DEV_CMD_ARG(name, num, cmd) case (num): { sprintf (code_now, "%s %lf\n%n", name, *((double*)(mach + i_byte + 1)), &shift); code_now += shift; i_byte += sizeof (double); break;  }
+            #define DEV_CMD_ARG(name, num, cmd) case (num): { sprintf  (code_now,           \
+                                                                        "%s %lf\n%n",       \
+                                                    name, *((double*)(mach + i_byte + 1)),  \
+                                                                        &shift);            \
+                                                    code_now += shift;                      \
+                                                    i_byte += sizeof (double);              \
+                                                    break;  }
 
             #include "../Commands.h"
 

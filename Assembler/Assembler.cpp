@@ -24,7 +24,7 @@ void CreateMachineCode (Text* code, const char* out_name)
     {
         if (ProcessLine (code->lines[i_line].point, file_out, &bytes))
         {
-            printf ("Error of compilation in line %d.", code->lines[i_line].position);
+            printf ("Assemblering error in line %d.", code->lines[i_line].position);
             exit (1);
         }
     }
@@ -38,7 +38,7 @@ void CreateMachineCode (Text* code, const char* out_name)
     fclose (file);
 
     free (file_out);
-    printf ("Compiling is successful!");
+    printf ("Assemblering was successful!");
     return;
 }
 
