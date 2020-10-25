@@ -141,28 +141,34 @@ int GetArg (CreatorCode* crc, const char* command)
 
     double put_arg_d = NAN;                           
     
-    //*(crc->mach + crc->bytes - 1) == 2 - command is pop
+    //sscanf (command, " %lf", &put_arg_d) < 1 - Double or not double?
+    //*(crc->mach + crc->bytes - 1) == 2       - Pop or not pop?
 
     if (sscanf (command, " %lf", &put_arg_d) < 1 || *(crc->mach + crc->bytes - 1) == 2)
     {
         char put_arg_s[50] = "";
         if (sscanf (command, " %s", put_arg_s))
         {
-            #define STR_CMP(name, num) if (strcmp(name, put_arg_s) == 0) {              \
-                                            *(crc->mach + crc->bytes - 1) |= 0b1000000; \
-                                            sprintf (crc->mach + crc->bytes, "%c", num);\
+            //ToDo: sprintf -> =
+            #define STR_CMP(name, num) if (strcmp(name, put_arg_s) == 0) {               \
+                                            crc->mach[crc->bytes - 1] |= 0b01000000;     \
+                                            sprintf (crc->mach + crc->bytes, "%c", num); \
+                                            crc->bytes++;                                \
                                             return 0; }
             #include "Registers.h"
             #undef STR_CMP
             
             //null pop
             if (*(crc->mach + crc->bytes - 1) == 2 && *put_arg_s == '\0')
+            {
+                *(crc->mach + crc->bytes - 1) |= 0b00100000;
                 return 0;
+            }
         }
         return 1;
     }
 
-    *(crc->mach + crc->bytes - 1) |= 0b100000;
+    *(crc->mach + crc->bytes - 1) |= 0b00100000;
     PrintDouble (crc->mach + crc->bytes, put_arg_d);  
     crc->bytes += sizeof (put_arg_d);
     return 0;

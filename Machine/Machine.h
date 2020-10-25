@@ -8,6 +8,7 @@ const size_t STACK_SIZE = 100;
 struct Processor
 {
     Stack stk = {};
+    double rx[4] = {};
 };
 
 void StartProcessor (char* mach);

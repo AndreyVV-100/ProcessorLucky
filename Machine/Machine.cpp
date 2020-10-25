@@ -30,7 +30,7 @@ void StartProcessor (char* mach)
 
     for (size_t byte_now = 0; byte_now < num_bytes; byte_now++)
     {
-        switch (mach[byte_now])
+        switch (mach[byte_now] & 0b11111)
         {
             #define ass if (pr.stk.status_error != 0) {	                    \
 			    printf ("\n" "Error in byte: %d. Exiting...", byte_now);	\
@@ -47,9 +47,11 @@ void StartProcessor (char* mach)
             #undef DO_PUSH
             #undef DO_POP
 
+            //ToDo: ExitError
             default:
                 printf ("Unknown command.");
                 free (mach_free);
+                ProcessorDestructor (&pr);
                 exit (1);
         }
     }
@@ -62,6 +64,8 @@ void ProcessorConstructor (Processor* pr)
 {
     assert (pr);
     StackConstructor (&(pr->stk), STACK_SIZE);
+    for (size_t i_rx = 0; i_rx < 4; i_rx++)
+        pr->rx[i_rx] = NAN;
     return;
 }
 
@@ -69,5 +73,7 @@ void ProcessorDestructor (Processor* pr)
 {
     assert (pr);
     StackDestructor (&(pr->stk));
+    for (size_t i_rx = 0; i_rx < 4; i_rx++)
+        pr->rx[i_rx] = NAN;
     return;
 }
