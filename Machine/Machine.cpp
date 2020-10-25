@@ -3,7 +3,7 @@
 int main()
 {
     char* mach = nullptr;
-    ReadBinary (&mach, "../Codes/mach.txt");
+    ReadBinary (&mach, "../Codes/mach.avv");
     StartProcessor (mach);
     
     return 0;

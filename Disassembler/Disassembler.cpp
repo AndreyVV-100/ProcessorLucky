@@ -5,7 +5,7 @@ int main()
     _set_printf_count_output (1);
     
     char* mach = nullptr;
-    ReadBinary (&mach, "../Codes/mach.txt");
+    ReadBinary (&mach, "../Codes/mach.avv");
     CreateAssemblerCode (mach, "../Codes/disasm.txt");
 
     return 0;

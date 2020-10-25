@@ -5,7 +5,7 @@ int main()
     Text code = {};
     ConstructorText (&code, "../Codes/asm.txt");
 
-    CreateMachineCode (&code, "../Codes/mach.txt");
+    CreateMachineCode (&code, "../Codes/mach.avv");
 
     DestructorText (&code);
 
