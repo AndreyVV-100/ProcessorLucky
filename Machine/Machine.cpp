@@ -1,45 +1,32 @@
 ﻿#include "Machine.h"
 
-//ToDo: One signature file for all projects.
-
 int main()
 {
     char* mach = nullptr;
-    ReadBinary (&mach, "../Assembler/CompileFiles/mach.txt");
+    ReadBinary (&mach, "../Codes/mach.txt");
     StartProcessor (mach);
     
     return 0;
 }
 
-void ReadBinary (char** text, const char* file_name)
-{
-    FILE* file = fopen (file_name, "rb");
-    assert (file);
-
-    size_t file_size = CountSize (file);
-    *text = (char*) calloc (file_size + 1, sizeof (**text));
-    assert (*text);
-
-    fread (*text, sizeof (*text), file_size, file);
-    fclose (file);
-
-    return;
-}
-
-void StartProcessor (const char* mach)
+void StartProcessor (char* mach)
 {
     assert (mach);
+    char* mach_free = mach;
+
     if (CheckSignature (mach))
     {
         printf ("Bad signature of file. Try to use another version of processor.");
         exit (1);
     }
+    mach += LEN_SIGNATURE;
 
     Processor pr = {};
     ProcessorConstructor (&pr);
 
-    size_t num_bytes = *((size_t*) (mach + LEN_SIGNATURE));
-    mach += LEN_SIGNATURE + sizeof (num_bytes);
+
+    size_t num_bytes = *((size_t*) mach);
+    mach += sizeof (num_bytes);
 
     for (size_t byte_now = 0; byte_now < num_bytes; byte_now++)
     {
@@ -62,21 +49,13 @@ void StartProcessor (const char* mach)
 
             default:
                 printf ("Unknown command.");
+                free (mach_free);
                 exit (1);
         }
     }
+
+    free (mach_free);
     ProcessorDestructor (&pr);
-}
-
-int CheckSignature (const char* text)
-{
-    assert (text);
-
-    for (size_t i_symb = 0; i_symb < LEN_SIGNATURE; i_symb++)
-        if (text[i_symb] != SIGNATURE[i_symb])
-            return 1;
-
-    return 0;
 }
 
 void ProcessorConstructor (Processor* pr)

@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{e7a6070b-cb08-4787-a58c-a47475ad21ad}</ProjectGuid>
-    <RootNamespace>Machine</RootNamespace>
+    <ProjectGuid>{04c205a5-b3d2-4792-92e2-b36853ba4d93}</ProjectGuid>
+    <RootNamespace>Disassembler</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,15 +141,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Libraries\BinaryText\BinaryText.cpp" />
-    <ClCompile Include="..\Libraries\Stack\Stack.cpp" />
     <ClCompile Include="..\Libraries\Text\Text.cpp" />
-    <ClCompile Include="Machine.cpp" />
+    <ClCompile Include="Disassembler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Libraries\BinaryText\BinaryText.h" />
-    <ClInclude Include="..\Libraries\Stack\Stack.h" />
     <ClInclude Include="..\Libraries\Text\Text.h" />
-    <ClInclude Include="Machine.h" />
+    <ClInclude Include="Disassembler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,9 +3,9 @@
 int main()
 {
     Text code = {};
-    ConstructorText (&code, "CompileFiles/code.txt");
+    ConstructorText (&code, "../Codes/asm.txt");
 
-    CreateMachineCode (&code, "CompileFiles/mach.txt");
+    CreateMachineCode (&code, "../Codes/mach.txt");
 
     DestructorText (&code);
 
@@ -37,6 +37,7 @@ void CreateMachineCode (Text* code, const char* out_name)
     fwrite (file_out, sizeof (*file_out), bytes, file);
     fclose (file);
 
+    free (file_out);
     printf ("Compiling is successful!");
     return;
 }
@@ -56,12 +57,12 @@ int ProcessLine (char* command, char* file_out, size_t* bytes)
     if (*get_cmd == '\0')
         return 0;
 
-    #define DEV_CMD(name, num, cmd) if (strcmp(get_cmd, name) == 0) {                \
+    #define DEV_CMD(name, num, cmd) if (strcmp(get_cmd, name) == 0) {            \
                                         sprintf (file_out + *bytes, "%c", num);  \
                                         (*bytes)++;                              \
                                         } else
 
-    #define DEV_CMD_ARG(name, num, cmd) if (strcmp(get_cmd, name) == 0) {               \
+    #define DEV_CMD_ARG(name, num, cmd) if (strcmp(get_cmd, name) == 0) {           \
                                         sprintf (file_out + *bytes, "%c", num);     \
                                         (*bytes)++;                                 \
                                         double put_arg = NAN;                       \
