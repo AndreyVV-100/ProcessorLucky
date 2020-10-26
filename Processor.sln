@@ -9,7 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Machine", "Machine\Machine.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89170E01-16DE-445B-AC38-13FBE0334D4C}"
 	ProjectSection(SolutionItems) = preProject
-		Commands.h = Commands.h
+		DefineFiles\Commands.h = DefineFiles\Commands.h
+		DefineFiles\Registers.h = DefineFiles\Registers.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Disassembler", "Disassembler\Disassembler.vcxproj", "{04C205A5-B3D2-4792-92E2-B36853BA4D93}"

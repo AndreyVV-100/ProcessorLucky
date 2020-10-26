@@ -3,7 +3,7 @@
 int main()
 {
     _set_printf_count_output (1);
-    
+
     char* mach = nullptr;
     ReadBinary (&mach, "../Codes/mach.avv");
     CreateAssemblerCode (mach, "../Codes/disasm.txt");
@@ -13,54 +13,21 @@ int main()
 
 void CreateAssemblerCode (char* mach, const char* file_name)
 {
-    assert (mach);
-    assert (file_name);
-
     char* mach_free = mach;
+    char* code = nullptr;
 
-    if (CheckSignature (mach))
-    {
-        printf ("Bad signature of file. Try to use another version of disassembler.");
-        exit (1);
-    }
-    mach += LEN_SIGNATURE;
+    size_t num_bytes = StartCreate (&mach, &code, file_name);
 
-    size_t num_bytes = *((int*) mach);
-    mach += sizeof (num_bytes);
-
-    char* code = (char*) calloc (num_bytes * 10, sizeof (*code));
-    assert (code);
     char* code_now = code;
-
-    size_t shift = -1;
 
     for (size_t i_byte = 0; i_byte < num_bytes; i_byte++)
     {
-        switch (mach[i_byte])
+        switch (mach[i_byte] & 0b00011111)
         {
-            #define DEV_CMD(name, num, cmd) case (num): { sprintf (code_now, "%s\n%n",  \
-                                                                   name, &shift);       \
-                                                        code_now += shift;              \
-                                                        break;  }
-
-            #define DEV_CMD_ARG(name, num, cmd) case (num): { sprintf  (code_now,           \
-                                                                        "%s %lf\n%n",       \
-                                                    name, *((double*)(mach + i_byte + 1)),  \
-                                                                        &shift);            \
-                                                    code_now += shift;                      \
-                                                    i_byte += sizeof (double);              \
-                                                    break;  }
-
-            #include "../Commands.h"
-
-            #undef DEV_CMD
-            #undef DEV_CMD_ARG
+            #include "CreatorCommands.h"
 
             default:
-                printf ("Disassemblering error in byte %d.", i_byte);
-                free (code);
-                free (mach_free);
-                exit (1);
+                ExitError (code, mach_free, i_byte);
         }
     }
 
@@ -68,9 +35,98 @@ void CreateAssemblerCode (char* mach, const char* file_name)
     fwrite (code, sizeof (*code), num_bytes * 10, file);
 
     fclose (file);
-    free (code);
-    free (mach_free);
+    
+    EndCreate (code, mach_free);
 
     printf ("Disassemblering was successful!");
+    return;
+}
+
+size_t StartCreate (char** mach, char** code, const char* file_name)
+{
+    assert (mach);
+    assert (*mach);
+    assert (file_name);
+
+    if (CheckSignature (*mach))
+    {
+        printf ("Bad signature of file. Try to use another version of disassembler.");
+        exit (1);
+    }
+    *mach += LEN_SIGNATURE;
+
+    size_t num_bytes = *((int*) *mach);
+    *mach += sizeof (num_bytes);
+
+    *code = (char*) calloc (num_bytes * 10, sizeof (*code));
+    assert (*code);  
+
+    return num_bytes;
+}
+
+void EndCreate (char* code, char* mach)
+{
+    free (code);
+    free (mach);
+
+    return;
+}
+
+void ExitError (char* code, char* mach, size_t byte)
+{
+    EndCreate (code, mach);
+    printf ("Disassemblering error in byte %d.", byte);
+
+    exit (1);
+}
+
+int GetArg (char* mach, size_t* byte, char** code)
+{
+    assert (mach);
+    assert (byte);
+    assert (code);
+    assert (*code);
+
+    switch (mach[*byte])
+    {
+        case POP_NULL:
+            PrintStr (code, "\n");
+            return 0;
+        case POP_RX:
+        case PUSH_RX:
+            #include "GetArgRegisters.h"
+            return 0;
+        case PUSH_NUM:
+            PrintDouble (code, mach + *byte + 1);
+            *byte += sizeof (double);
+            return 0;
+        default:
+            return 1;
+    }
+}
+
+void PrintStr (char** code, const char* str)
+{
+    assert (code);
+    assert (*code);
+    assert (str);
+
+    size_t shift = 0;
+    sprintf (*code, "%s%n", str, &shift);  
+    *code += shift;
+
+    return;
+}
+
+void PrintDouble (char** code, const char* mach)
+{
+    assert (code);
+    assert (*code);
+    assert (mach);
+
+    size_t shift = 0;
+    sprintf (*code, "%lf\n%n", *((double*) mach), &shift);
+    *code += shift;
+
     return;
 }

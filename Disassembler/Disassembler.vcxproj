@@ -147,7 +147,9 @@
   <ItemGroup>
     <ClInclude Include="..\Libraries\BinaryText\BinaryText.h" />
     <ClInclude Include="..\Libraries\Text\Text.h" />
+    <ClInclude Include="CreatorCommands.h" />
     <ClInclude Include="Disassembler.h" />
+    <ClInclude Include="GetArgRegisters.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

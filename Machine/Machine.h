@@ -11,8 +11,14 @@ struct Processor
     double rx[4] = {};
 };
 
-void StartProcessor (char* mach);
+void GoProcessor (char* mach);
+
+size_t StartProcessor (Processor* pr, char* *mach);
+
+void FinishProcessor (Processor* pr, char* mach);
 
 void ProcessorConstructor (Processor* pr);
 
 void ProcessorDestructor  (Processor* pr);
+
+void ExitError (Processor* pr, char* mach, size_t byte);

@@ -4,60 +4,59 @@ int main()
 {
     char* mach = nullptr;
     ReadBinary (&mach, "../Codes/mach.avv");
-    StartProcessor (mach);
+    GoProcessor (mach);
     
     return 0;
 }
 
-void StartProcessor (char* mach)
+size_t StartProcessor (Processor* pr, char** mach)
 {
     assert (mach);
-    char* mach_free = mach;
+    assert (*mach);
 
-    if (CheckSignature (mach))
+    if (CheckSignature (*mach))
     {
         printf ("Bad signature of file. Try to use another version of processor.");
         exit (1);
     }
-    mach += LEN_SIGNATURE;
+    *mach += LEN_SIGNATURE;
 
+    ProcessorConstructor (pr);
+
+    size_t num_bytes = *((size_t*) *mach);
+    *mach += sizeof (num_bytes);
+
+    return num_bytes;
+}
+
+void GoProcessor (char* mach)
+{
+    char* mach_free = mach;
     Processor pr = {};
-    ProcessorConstructor (&pr);
-
-
-    size_t num_bytes = *((size_t*) mach);
-    mach += sizeof (num_bytes);
+    
+    size_t num_bytes = StartProcessor (&pr, &mach);
 
     for (size_t byte_now = 0; byte_now < num_bytes; byte_now++)
     {
         switch (mach[byte_now] & 0b11111)
         {
-            #define ass if (pr.stk.status_error != 0) {	                    \
-			    printf ("\n" "Error in byte: %d. Exiting...", byte_now);	\
-				exit (pr.stk.status_error);}
-            #define DO_PUSH(number) StackPush (&(pr.stk), number)                  
-            #define DO_POP  StackPop  (&(pr.stk))
-            #define DEV_CMD(name, num, cmd)     case (num): cmd break;
-            #define DEV_CMD_ARG(name, num, cmd) case (num): cmd break;
-
-            #include "../Commands.h"
-
-            #undef DEV_CMD
-            #undef DEV_CMD_ARG
-            #undef DO_PUSH
-            #undef DO_POP
-
-            //ToDo: ExitError
+            #include "MachineCommands.h"
             default:
-                printf ("Unknown command.");
-                free (mach_free);
-                ProcessorDestructor (&pr);
-                exit (1);
+                ExitError (&pr, mach_free, byte_now);
         }
     }
 
-    free (mach_free);
-    ProcessorDestructor (&pr);
+    FinishProcessor (&pr, mach_free);
+}
+
+void FinishProcessor (Processor* pr, char* mach)
+{
+    assert (pr);
+
+    ProcessorDestructor (pr);
+    free (mach);
+
+    return;
 }
 
 void ProcessorConstructor (Processor* pr)
@@ -76,4 +75,12 @@ void ProcessorDestructor (Processor* pr)
     for (size_t i_rx = 0; i_rx < 4; i_rx++)
         pr->rx[i_rx] = NAN;
     return;
+}
+
+void ExitError (Processor* pr, char* mach, size_t byte)
+{
+    FinishProcessor (pr, mach);
+    printf ("Unknown command in byte %d. Exiting...", byte);
+
+    exit (1);
 }

@@ -149,6 +149,7 @@
     <ClInclude Include="..\Libraries\Stack\Stack.h" />
     <ClInclude Include="..\Libraries\Text\Text.h" />
     <ClInclude Include="Machine.h" />
+    <ClInclude Include="MachineCommands.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

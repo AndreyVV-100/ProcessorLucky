@@ -7,20 +7,15 @@ DEV_CMD_ARG ("push", 1,
             byte_now += sizeof (double);
         }
         else if ((mach[byte_now] & 0b11100000) == 0b01000000 &&
-                 mach[byte_now + 1] >= 1 &&
-                 mach[byte_now + 1] <= 4)
+                 mach[byte_now + 1] >= 0 &&
+                 mach[byte_now + 1] <= 3)
         {
-            DO_PUSH (pr.rx[mach[byte_now + 1] - 1]);
+            DO_PUSH (pr.rx[mach[byte_now + 1]]);
             ass
             byte_now += sizeof (char);
         }
         else
-        {
-            printf ("Unknown command1.");
-            free (mach_free);
-            ProcessorDestructor (&pr);
-            exit (1);
-        }
+            ExitError (&pr, mach_free, byte_now);
     })
 
 DEV_CMD_ARG ("pop", 2,
@@ -31,20 +26,15 @@ DEV_CMD_ARG ("pop", 2,
             ass
         }
         else if ((mach[byte_now] & 0b11100000) == 0b01000000 &&
-                 mach[byte_now + 1] >= 1 &&
-                 mach[byte_now + 1] <= 4)
+                 mach[byte_now + 1] >= 0 &&
+                 mach[byte_now + 1] <= 3)
         {
-            pr.rx[mach[byte_now + 1] - 1] = DO_POP;
+            pr.rx[mach[byte_now + 1]] = DO_POP;
             ass
             byte_now += sizeof (char);
         }
         else
-        {
-            printf ("Unknown command.%d", byte_now);
-            free (mach_free);
-            ProcessorDestructor (&pr);
-            exit (1);
-        }
+            ExitError (&pr, mach_free, byte_now);
     })
 
 DEV_CMD ("add", 3,

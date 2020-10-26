@@ -49,26 +49,12 @@ int ProcessLine (char* command, CreatorCode* crc)
 
     char get_cmd[10] = "";
     int shift = -1;
+
     sscanf (command, " %s%n", get_cmd, &shift);
     if (*get_cmd == '\0')
         return 0;
 
-    #define DEV_CMD(name, num, cmd) if (strcmp(get_cmd, name) == 0) {                   \
-                                        sprintf (crc->mach + crc->bytes, "%c", num);    \
-                                        crc->bytes++;                                   \
-                                        } else
-
-    #define DEV_CMD_ARG(name, num, cmd) if (strcmp(get_cmd, name) == 0) {               \
-                                            sprintf (crc->mach + crc->bytes, "%c", num);\
-                                            crc->bytes++;                               \
-                                            if (GetArg (crc, command + shift))          \
-                                                return 1;                               \
-                                        } else
-
-    #include "../Commands.h"
-    #undef DEV_CMD
-    #undef DEV_CMD_ARG
-    /*else*/ return 1;
+    #include "ProcessLineCommands.h"
 
     return 0;
 }
@@ -121,13 +107,14 @@ void CrcOutput (CreatorCode* crc, const char* out_name)
     FILE* file = fopen (out_name, "wb");
     assert (file);
 
-    fprintf (file, "%s", SIGNATURE);
-    fwrite (&(crc->bytes), sizeof (crc->bytes), 1, file);
-    fwrite (crc->mach, sizeof (*(crc->mach)), crc->bytes, file);
-    fclose (file);
+    fwrite (SIGNATURE,      sizeof (*SIGNATURE),    LEN_SIGNATURE,  file);
+    fwrite (&(crc->bytes),  sizeof (crc->bytes),    1,              file);
+    fwrite (crc->mach,      sizeof (*(crc->mach)),  crc->bytes,     file);
 
+    fclose (file);
     file = fopen ("../Codes/AssemblerLog.txt", "w");
     assert (file);
+
     fwrite (crc->report, sizeof (*(crc->report)), crc->size_report, file);
     fclose (file);
 
@@ -142,34 +129,29 @@ int GetArg (CreatorCode* crc, const char* command)
     double put_arg_d = NAN;                           
     
     //sscanf (command, " %lf", &put_arg_d) < 1 - Double or not double?
-    //*(crc->mach + crc->bytes - 1) == 2       - Pop or not pop?
+    //crc->mach[crc->bytes - 1] == 2 - Pop or not pop?
 
-    if (sscanf (command, " %lf", &put_arg_d) < 1 || *(crc->mach + crc->bytes - 1) == 2)
+    if (sscanf (command, " %lf", &put_arg_d) < 1 || crc->mach[crc->bytes - 1] == 2)
     {
         char put_arg_s[50] = "";
         if (sscanf (command, " %s", put_arg_s))
         {
-            //ToDo: sprintf -> =
-            #define STR_CMP(name, num) if (strcmp(name, put_arg_s) == 0) {               \
-                                            crc->mach[crc->bytes - 1] |= 0b01000000;     \
-                                            sprintf (crc->mach + crc->bytes, "%c", num); \
-                                            crc->bytes++;                                \
-                                            return 0; }
-            #include "Registers.h"
-            #undef STR_CMP
+            //registers include
+            #include "GetArgRegisters.h"
             
             //null pop
-            if (*(crc->mach + crc->bytes - 1) == 2 && *put_arg_s == '\0')
+            if (crc->mach[crc->bytes - 1] == 2 && *put_arg_s == '\0')
             {
-                *(crc->mach + crc->bytes - 1) |= 0b00100000;
+                crc->mach[crc->bytes - 1] |= 0b00100000;
                 return 0;
             }
         }
         return 1;
     }
 
-    *(crc->mach + crc->bytes - 1) |= 0b00100000;
+    crc->mach[crc->bytes - 1] |= 0b00100000;
     PrintDouble (crc->mach + crc->bytes, put_arg_d);  
     crc->bytes += sizeof (put_arg_d);
+
     return 0;
 }
