@@ -89,6 +89,9 @@ int GetArg (char* mach, size_t* byte, char** code)
 
     switch (mach[*byte])
     {
+        case JMP:
+            PrintInt (code, mach + *byte + 1);
+            *byte += sizeof (size_t);
         case POP_NULL:
             PrintStr (code, "\n");
             return 0;
@@ -126,6 +129,19 @@ void PrintDouble (char** code, const char* mach)
 
     size_t shift = 0;
     sprintf (*code, "%lf\n%n", *((double*) mach), &shift);
+    *code += shift;
+
+    return;
+}
+
+void PrintInt (char** code, const char* mach)
+{
+    assert (code);
+    assert (*code);
+    assert (mach);
+
+    size_t shift = 0;
+    sprintf (*code, "%u\n%n", *((size_t*) mach), &shift);
     *code += shift;
 
     return;

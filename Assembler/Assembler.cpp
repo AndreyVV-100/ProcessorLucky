@@ -21,13 +21,17 @@ void CreateMachineCode (Text* code, const char* out_name)
 
     CrcConstructor (&crc, code->size_text);
 
-    for (size_t i_line = 0; i_line < code->n_empty_lines; i_line++)
+    for (size_t i_iter = 0; i_iter < 2; i_iter++)
     {
-        if (ProcessLine (code->lines[i_line].point, &crc))
+        crc.bytes = 0;
+        for (size_t i_line = 0; i_line < code->n_empty_lines; i_line++)
         {
-            printf ("Assemblering error in line %d.", code->lines[i_line].position);
-            CrcDestructor (&crc);
-            return;
+            if (ProcessLine (code->lines[i_line].point, &crc))
+            {
+                printf ("Assemblering error in line %d.", code->lines[i_line].position);
+                CrcDestructor (&crc);
+                return;
+            }
         }
     }
 
@@ -71,6 +75,17 @@ void PrintDouble (char* buffer, double num)
     return;
 }
 
+void PrintInt (char* buffer, size_t num)
+{
+    assert (buffer);
+
+    char* ch_num = (char*)&num;
+    for (size_t i_byte = 0; i_byte < sizeof (num); i_byte++)
+        sprintf (buffer + i_byte, "%c", ch_num[i_byte]);
+
+    return;
+}
+
 void CrcConstructor (CreatorCode* crc, size_t code_size)
 {
     assert (crc);
@@ -79,6 +94,9 @@ void CrcConstructor (CreatorCode* crc, size_t code_size)
     crc->mach   = (char*) calloc (code_size,     sizeof (char));
     crc->report = (char*) calloc (code_size * 5, sizeof (char));
     size_t bytes = 0;
+
+    for (size_t i_tag = 0; i_tag < 10; i_tag++)
+        crc->tags[i_tag] = -1;
 
     assert (crc->mach);
     assert (crc->report);
@@ -96,6 +114,9 @@ void CrcDestructor (CreatorCode* crc)
     crc->mach   = nullptr;
     crc->report = nullptr;
     crc->bytes  = 0;
+
+    for (size_t i_tag = 0; i_tag < 10; i_tag++)
+        crc->tags[i_tag] = -1;
 
     return;
 }
@@ -126,6 +147,31 @@ int GetArg (CreatorCode* crc, const char* command)
     assert (crc);
     assert (command);
 
+    //ToDo: GoTag
+    if (crc->mach[crc->bytes - 1] >= J_FIRST && crc->mach[crc->bytes - 1] <= J_LAST)
+    {
+        size_t put_arg_i = 0;
+        if (sscanf (command, " %u", &put_arg_i))
+        {
+            crc->mach[crc->bytes - 1] |= 0b00100000;
+            PrintInt (crc->mach + crc->bytes, put_arg_i);
+            crc->bytes += sizeof (put_arg_i);
+            return 0;
+        }
+
+        char put_arg_s[50] = "";
+        if (sscanf (command, " %s", put_arg_s) && 
+            Isnum (put_arg_s[1])               &&
+            put_arg_s[0] == ':')
+        {
+            crc->mach[crc->bytes - 1] |= 0b00100000;
+            PrintInt (crc->mach + crc->bytes, crc->tags[put_arg_s[1] - '0']);
+            crc->bytes += sizeof (size_t);
+            return 0;
+        }
+        return 1;
+    }
+
     double put_arg_d = NAN;                           
     
     //sscanf (command, " %lf", &put_arg_d) < 1 - Double or not double?
@@ -154,4 +200,9 @@ int GetArg (CreatorCode* crc, const char* command)
     crc->bytes += sizeof (put_arg_d);
 
     return 0;
+}
+
+int Isnum (char c)
+{
+    return c >= '0' && c <= '9';
 }

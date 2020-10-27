@@ -10,6 +10,7 @@ const char POP_NULL = 0b00100010;
 const char POP_RX   = 0b01000010;
 const char PUSH_NUM = 0b00100001;
 const char PUSH_RX  = 0b01000001;
+const char JMP      = 0b00001111;
 
 void CreateAssemblerCode (char* mach, const char* file_name);
 
@@ -24,3 +25,5 @@ int GetArg (char* mach, size_t* byte, char** code);
 void PrintStr (char** code, const char* str);
 
 void PrintDouble (char** code, const char* mach);
+
+void PrintInt (char** code, const char* mach);

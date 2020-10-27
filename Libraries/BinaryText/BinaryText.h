@@ -1,6 +1,6 @@
 #pragma once
 
-const char   SIGNATURE[] = "AVV0.2";
+const char   SIGNATURE[] = "AVV0.3";
 const size_t LEN_SIGNATURE = 6;
 
 void ReadBinary (char** text, const char* file_name);

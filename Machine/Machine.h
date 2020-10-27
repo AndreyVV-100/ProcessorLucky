@@ -7,7 +7,8 @@ const size_t STACK_SIZE = 100;
 
 struct Processor
 {
-    Stack stk = {};
+    Stack stk  = {};
+    Stack call = {};
     double rx[4] = {};
 };
 

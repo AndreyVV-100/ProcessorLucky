@@ -14,4 +14,7 @@
 #undef DEV_CMD
 #undef DEV_CMD_ARG
 
-/*else*/ return 1;
+/*else*/ if (get_cmd[1] == ':' && Isnum (get_cmd[0]))
+            crc->tags[get_cmd[0] - '0'] = crc->bytes;
+
+else return 1;

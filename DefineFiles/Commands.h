@@ -132,3 +132,75 @@ DEV_CMD("hlt",  14,
         ProcessorDestructor (&pr);
         exit (0);
     })
+
+DEV_CMD_ARG("jmp", 15, 
+    {
+        byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
+    })
+
+DEV_CMD_ARG("ja", 16, 
+    {
+        if (DO_POP > DO_POP)
+            byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
+        else
+            byte_now += sizeof (size_t);
+        ass
+    })
+
+DEV_CMD_ARG("jae", 17, 
+    {
+        if (DO_POP >= DO_POP)
+            byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
+        else
+            byte_now += sizeof (size_t);
+        ass
+    })
+
+DEV_CMD_ARG("jb", 18, 
+    {
+        if (DO_POP < DO_POP)
+            byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
+        else
+            byte_now += sizeof (size_t);
+        printf ("%d\n", byte_now);
+        ass
+    })
+
+DEV_CMD_ARG("jbe", 19, 
+    {
+        if (DO_POP <= DO_POP)
+            byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
+        else 
+            byte_now += sizeof (size_t);
+        ass
+    })
+
+DEV_CMD_ARG("je", 20, 
+    {
+        if (DO_POP == DO_POP)
+            byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
+        else
+            byte_now += sizeof (size_t);
+        ass
+    })
+
+DEV_CMD_ARG("jne", 21, 
+    {
+        if (DO_POP != DO_POP)
+            byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
+        else
+            byte_now += sizeof (size_t);
+        ass
+    })
+
+DEV_CMD_ARG("call", 22,
+    {
+        StackPush (&pr.call, byte_now);
+        byte_now = *((size_t*)(mach + byte_now + 1)) - 1;
+    })
+
+DEV_CMD("ret", 23,
+    {
+        byte_now = StackPop(&pr.call);
+        byte_now += sizeof (size_t);
+    })

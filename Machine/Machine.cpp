@@ -38,7 +38,7 @@ void GoProcessor (char* mach)
 
     for (size_t byte_now = 0; byte_now < num_bytes; byte_now++)
     {
-        switch (mach[byte_now] & 0b11111)
+        switch (mach[byte_now] & 0b00011111)
         {
             #include "MachineCommands.h"
             default:
@@ -62,7 +62,8 @@ void FinishProcessor (Processor* pr, char* mach)
 void ProcessorConstructor (Processor* pr)
 {
     assert (pr);
-    StackConstructor (&(pr->stk), STACK_SIZE);
+    StackConstructor (&(pr->stk),  STACK_SIZE);
+    StackConstructor (&(pr->call), STACK_SIZE);
     for (size_t i_rx = 0; i_rx < 4; i_rx++)
         pr->rx[i_rx] = NAN;
     return;
@@ -72,6 +73,7 @@ void ProcessorDestructor (Processor* pr)
 {
     assert (pr);
     StackDestructor (&(pr->stk));
+    StackDestructor (&(pr->call));
     for (size_t i_rx = 0; i_rx < 4; i_rx++)
         pr->rx[i_rx] = NAN;
     return;
@@ -84,3 +86,5 @@ void ExitError (Processor* pr, char* mach, size_t byte)
 
     exit (1);
 }
+
+
