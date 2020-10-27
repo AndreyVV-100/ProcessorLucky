@@ -3,7 +3,7 @@
 int main()
 {
     Text code = {};
-    ConstructorText (&code, "../Codes/asm.txt");
+    ConstructorText (&code, "../Codes/Factorial.txt");
 
     CreateMachineCode (&code, "../Codes/mach.avv");
 
@@ -67,22 +67,14 @@ void PrintDouble (char* buffer, double num)
 {
     assert (buffer);
     assert (!isnan (num));
-
-    char* ch_num = (char*) &num;
-    for (size_t i_byte = 0; i_byte < sizeof (num); i_byte++)
-        sprintf (buffer + i_byte, "%c", ch_num[i_byte]);
-
+    *(double*) buffer = num;
     return;
 }
 
 void PrintInt (char* buffer, size_t num)
 {
     assert (buffer);
-
-    char* ch_num = (char*)&num;
-    for (size_t i_byte = 0; i_byte < sizeof (num); i_byte++)
-        sprintf (buffer + i_byte, "%c", ch_num[i_byte]);
-
+    *(size_t*) buffer = num;
     return;
 }
 

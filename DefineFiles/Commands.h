@@ -162,7 +162,6 @@ DEV_CMD_ARG("jb", 18,
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
         else
             byte_now += sizeof (size_t);
-        printf ("%d\n", byte_now);
         ass
     })
 
