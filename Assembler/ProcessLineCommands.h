@@ -14,7 +14,22 @@
 #undef DEV_CMD
 #undef DEV_CMD_ARG
 
-/*else*/ if (get_cmd[1] == ':' && Isnum (get_cmd[0]))
-            crc->tags[get_cmd[0] - '0'] = crc->bytes;
+/*else*/
+{
+    char* colon = strchr (command, ':');
 
-else return 1;
+    if (colon != NULL)
+    {
+        *colon = '\0';
+        size_t put_arg_i = SIZE_T_MAX;
+
+        if (sscanf (command, " %u", &put_arg_i) && put_arg_i < TAGS_NUM)
+        {
+            crc->tags_num[put_arg_i].tg = crc->bytes;
+            *colon = ':';
+            return 0;
+        }
+    }
+
+    return 1;
+}

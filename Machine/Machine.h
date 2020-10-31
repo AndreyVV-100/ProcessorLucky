@@ -2,6 +2,7 @@
 #include "../Libraries/Stack/Stack.h"
 #include "../Libraries/Text/Text.h"
 #include "../Libraries/BinaryText/BinaryText.h"
+#include "../DefineFiles/Modes.h"
 
 const size_t STACK_SIZE = 100;
 

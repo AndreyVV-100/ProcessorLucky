@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89170E01-16DE-445B-AC38-13FBE0334D4C}"
 	ProjectSection(SolutionItems) = preProject
 		DefineFiles\Commands.h = DefineFiles\Commands.h
+		DefineFiles\Modes.h = DefineFiles\Modes.h
 		DefineFiles\Registers.h = DefineFiles\Registers.h
 	EndProjectSection
 EndProject

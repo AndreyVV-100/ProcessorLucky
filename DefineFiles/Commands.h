@@ -1,12 +1,12 @@
 DEV_CMD_ARG ("push", 1,
     {
-        if ((mach[byte_now] & 0b11100000) == 0b00100000)
+        if ((mach[byte_now] & MODE_MASK) == MODE_1)
         {
             DO_PUSH (*((double*) (mach + byte_now + 1)));
             ass
             byte_now += sizeof (double);
         }
-        else if ((mach[byte_now] & 0b11100000) == 0b01000000 &&
+        else if ((mach[byte_now] & MODE_MASK) == MODE_2 &&
                  mach[byte_now + 1] >= 0 &&
                  mach[byte_now + 1] <= 3)
         {
@@ -20,12 +20,12 @@ DEV_CMD_ARG ("push", 1,
 
 DEV_CMD_ARG ("pop", 2,
     {
-        if ((mach[byte_now] & 0b11100000) == 0b00100000)
+        if ((mach[byte_now] & MODE_MASK) == MODE_1)
         {
             DO_POP;
             ass
         }
-        else if ((mach[byte_now] & 0b11100000) == 0b01000000 &&
+        else if ((mach[byte_now] & MODE_MASK) == MODE_2 &&
                  mach[byte_now + 1] >= 0 &&
                  mach[byte_now + 1] <= 3)
         {
