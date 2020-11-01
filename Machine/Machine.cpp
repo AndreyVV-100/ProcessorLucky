@@ -38,7 +38,7 @@ void GoProcessor (char* mach)
 
     for (size_t byte_now = 0; byte_now < num_bytes; byte_now++)
     {
-        switch (mach[byte_now] & 0b00011111)
+        switch (mach[byte_now] & CMD_MASK)
         {
             #include "MachineCommands.h"
             default:

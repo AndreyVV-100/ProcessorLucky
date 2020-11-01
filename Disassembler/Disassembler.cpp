@@ -22,7 +22,7 @@ void CreateAssemblerCode (char* mach, const char* file_name)
 
     for (size_t i_byte = 0; i_byte < num_bytes; i_byte++)
     {
-        switch (mach[i_byte] & 0b00011111)
+        switch (mach[i_byte] & CMD_MASK)
         {
             #include "CreatorCommands.h"
 
@@ -87,11 +87,15 @@ int GetArg (char* mach, size_t* byte, char** code)
     assert (code);
     assert (*code);
 
+    if ((mach[*byte] & CMD_MASK) >= J_FIRST && (mach[*byte] & CMD_MASK) <= J_LAST)
+    {
+        PrintInt (code, mach + *byte + 1);
+        *byte += sizeof (size_t);
+        return 0;
+    }
+
     switch (mach[*byte])
     {
-        case JMP:
-            PrintInt (code, mach + *byte + 1);
-            *byte += sizeof (size_t);
         case POP_NULL:
             PrintStr (code, "\n");
             return 0;

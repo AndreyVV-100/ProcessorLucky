@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "../Libraries/BinaryText/BinaryText.h"
+#include "../DefineFiles/Modes.h"
 
 #pragma warning (disable : 4996)
 
@@ -10,7 +11,6 @@ const char POP_NULL = 0b00100010;
 const char POP_RX   = 0b01000010;
 const char PUSH_NUM = 0b00100001;
 const char PUSH_RX  = 0b01000001;
-const char JMP      = 0b00001111;
 
 void CreateAssemblerCode (char* mach, const char* file_name);
 
