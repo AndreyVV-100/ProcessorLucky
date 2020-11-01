@@ -20,10 +20,10 @@ void EndCreate (char* code, char* mach);
 
 void ExitError (char* code, char* mach, size_t byte);
 
-int GetArg (char* mach, size_t* byte, char** code);
+int GetArg (char* mach, size_t* byte, char** code, size_t* shift_code);
 
-void PrintStr (char** code, const char* str);
+void PrintStr (char** code, const char* str, size_t* shift_code);
 
-void PrintDouble (char** code, const char* mach);
+void PrintDouble (char** code, const char* mach, size_t* shift_code);
 
-void PrintInt (char** code, const char* mach);
+void PrintInt (char** code, const char* mach, size_t* shift_code);

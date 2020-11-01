@@ -18,7 +18,7 @@ void CreateAssemblerCode (char* mach, const char* file_name)
 
     size_t num_bytes = StartCreate (&mach, &code, file_name);
 
-    char* code_now = code;
+    size_t shift_code = 0;
 
     for (size_t i_byte = 0; i_byte < num_bytes; i_byte++)
     {
@@ -32,7 +32,7 @@ void CreateAssemblerCode (char* mach, const char* file_name)
     }
 
     FILE* file = fopen (file_name, "w");
-    fwrite (code, sizeof (*code), num_bytes * 10, file);
+    fwrite (code, sizeof (*code), shift_code, file);
 
     fclose (file);
     
@@ -80,7 +80,7 @@ void ExitError (char* code, char* mach, size_t byte)
     exit (1);
 }
 
-int GetArg (char* mach, size_t* byte, char** code)
+int GetArg (char* mach, size_t* byte, char** code, size_t* shift_code)
 {
     assert (mach);
     assert (byte);
@@ -89,7 +89,7 @@ int GetArg (char* mach, size_t* byte, char** code)
 
     if ((mach[*byte] & CMD_MASK) >= J_FIRST && (mach[*byte] & CMD_MASK) <= J_LAST)
     {
-        PrintInt (code, mach + *byte + 1);
+        PrintInt (code, mach + *byte + 1, shift_code);
         *byte += sizeof (size_t);
         return 0;
     }
@@ -97,14 +97,14 @@ int GetArg (char* mach, size_t* byte, char** code)
     switch (mach[*byte])
     {
         case POP_NULL:
-            PrintStr (code, "\n");
+            PrintStr (code, "\n", shift_code);
             return 0;
         case POP_RX:
         case PUSH_RX:
             #include "GetArgRegisters.h"
             return 0;
         case PUSH_NUM:
-            PrintDouble (code, mach + *byte + 1);
+            PrintDouble (code, mach + *byte + 1, shift_code);
             *byte += sizeof (double);
             return 0;
         default:
@@ -112,41 +112,41 @@ int GetArg (char* mach, size_t* byte, char** code)
     }
 }
 
-void PrintStr (char** code, const char* str)
+void PrintStr (char** code, const char* str, size_t* shift_code)
 {
     assert (code);
     assert (*code);
     assert (str);
 
     size_t shift = 0;
-    sprintf (*code, "%s%n", str, &shift);  
-    *code += shift;
+    sprintf (*code + *shift_code, "%s%n", str, &shift);  
+    *shift_code += shift;
 
     return;
 }
 
-void PrintDouble (char** code, const char* mach)
+void PrintDouble (char** code, const char* mach, size_t* shift_code)
 {
     assert (code);
     assert (*code);
     assert (mach);
 
     size_t shift = 0;
-    sprintf (*code, "%lf\n%n", *((double*) mach), &shift);
-    *code += shift;
+    sprintf (*code + *shift_code, "%lf\n%n", *((double*) mach), &shift);
+    *shift_code += shift;
 
     return;
 }
 
-void PrintInt (char** code, const char* mach)
+void PrintInt (char** code, const char* mach, size_t* shift_code)
 {
     assert (code);
     assert (*code);
     assert (mach);
 
     size_t shift = 0;
-    sprintf (*code, "%u\n%n", *((size_t*) mach), &shift);
-    *code += shift;
+    sprintf (*code + *shift_code, "%u\n%n", *((size_t*) mach), &shift);
+    *shift_code += shift;
 
     return;
 }
