@@ -56,3 +56,5 @@ int GoTagNum (CreatorCode* crc, size_t arg, char* colon);
 int GoTagStr (CreatorCode* crc, char* colon);
 
 size_t GetStrTag (CreatorCode* crc, char* str);
+
+int PoPuArg (CreatorCode* crc, char* command);

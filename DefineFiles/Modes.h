@@ -5,3 +5,4 @@ const char MODE_MASK = 0b11100000;
 const char CMD_MASK  = 0b00011111;
 const char J_FIRST = 15;
 const char J_LAST = 22;
+const char POP = 2;

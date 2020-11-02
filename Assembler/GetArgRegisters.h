@@ -1,8 +1,8 @@
-#define REGISTER(name, num) if (strcmp(name, put_arg_s) == 0) {                      \
+#define REGISTER(name, num) if (strcmp(name, put_arg_s) == 0) {                     \
                                             crc->mach[crc->bytes - 1] |= MODE_2;    \
                                             crc->mach[crc->bytes] = num;            \
                                             crc->bytes++;                           \
-                                            return 0; }
+                                            command += shift; }
 
 #include "../DefineFiles/Registers.h"
 

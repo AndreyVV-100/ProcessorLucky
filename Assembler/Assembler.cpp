@@ -3,7 +3,7 @@
 int main()
 {
     Text code = {};
-    ConstructorText (&code, "../Codes/Factorial.txt");
+    ConstructorText (&code, "../Codes/SqrtSolve.txt");
 
     CreateMachineCode (&code, "../Codes/mach.avv");
 
@@ -175,34 +175,7 @@ int GetArg (CreatorCode* crc, char* command)
     if (crc->mach[crc->bytes - 1] >= J_FIRST && crc->mach[crc->bytes - 1] <= J_LAST)
         return GoTag (crc, command);
 
-    double put_arg_d = NAN;                           
-    
-    //sscanf (command, " %lf", &put_arg_d) < 1 - Double or not double?
-    //crc->mach[crc->bytes - 1] == 2 - Pop or not pop?
-
-    if (sscanf (command, " %lf", &put_arg_d) < 1 || crc->mach[crc->bytes - 1] == 2)
-    {
-        char put_arg_s[50] = "";
-        if (sscanf (command, " %s", put_arg_s))
-        {
-            //registers include
-            #include "GetArgRegisters.h"
-            
-            //null pop
-            if (crc->mach[crc->bytes - 1] == 2 && *put_arg_s == '\0')
-            {
-                crc->mach[crc->bytes - 1] |= MODE_1;
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    crc->mach[crc->bytes - 1] |= MODE_1;
-    PrintDouble (crc->mach + crc->bytes, put_arg_d);  
-    crc->bytes += sizeof (put_arg_d);
-
-    return 0;
+    return PoPuArg (crc, command);
 }
 
 int GoTag (CreatorCode* crc, char* command)
@@ -267,6 +240,8 @@ int GoTagStr (CreatorCode* crc, char* colon)
         return 0;
     }
 
+    crc->mach[crc->bytes - 1] |= MODE_3;
+
     char* tag = colon + 1;
     if (*tag == '\0' || *tag == '\t' || *tag == ' ')
         return 1;
@@ -299,4 +274,67 @@ size_t GetStrTag (CreatorCode* crc, char* str)
         return SIZE_T_MAX;
 
     return crc->tags_str[i_tag].byte;
+}
+
+int PoPuArg (CreatorCode* crc, char* command)
+{
+    assert (crc);
+    assert (command);
+
+    // RAM check
+
+    char* check_RAM = strchr (command, '[');
+
+    if (check_RAM)
+    {
+        command = check_RAM + 1;
+        crc->mach[crc->bytes - 1] |= MODE_3;
+
+        check_RAM = strchr (command, ']');
+        if (!check_RAM)
+            return 1;
+        *check_RAM = '\0';
+    }
+
+    // Registers check
+
+    char put_arg_s[50] = "";
+    int shift = SIZE_T_MAX;
+
+    if (sscanf (command, " %s%n", put_arg_s, &shift))
+    {
+        #include "GetArgRegisters.h"
+    }
+
+    //null pop
+    if ((crc->mach[crc->bytes - 1] & CMD_MASK) == POP && *put_arg_s == '\0')
+        return crc->mach[crc->bytes - 1] & MODE_3;
+
+    shift = 0;
+    sscanf (command, " %s%n", put_arg_s, &shift);
+    int check_plus = strcmp (put_arg_s, "+");
+    if (shift && check_plus != 0 && (crc->mach[crc->bytes - 1] & MODE_2))
+        return 1;
+    // Number check
+
+    if (!check_plus)
+        command += shift;
+
+    double put_arg_d = NAN;
+    sscanf (command, " %lf", &put_arg_d);
+
+    if (!(isnan (put_arg_d)))
+    {
+        crc->mach[crc->bytes - 1] |= MODE_1;
+        PrintDouble (crc->mach + crc->bytes, put_arg_d);
+        crc->bytes += sizeof (put_arg_d);
+        if (check_RAM)
+            *check_RAM = ']';
+        
+        return 0;
+    }
+
+    if (check_RAM)
+        *check_RAM = ']';
+    return shift;
 }
