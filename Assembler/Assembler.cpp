@@ -282,13 +282,13 @@ int PoPuArg (CreatorCode* crc, char* command)
     assert (command);
 
     // RAM check
-
+    size_t save_byte = crc->bytes - 1;
     char* check_RAM = strchr (command, '[');
 
     if (check_RAM)
     {
         command = check_RAM + 1;
-        crc->mach[crc->bytes - 1] |= MODE_3;
+        crc->mach[save_byte] |= MODE_3;
 
         check_RAM = strchr (command, ']');
         if (!check_RAM)
@@ -307,13 +307,13 @@ int PoPuArg (CreatorCode* crc, char* command)
     }
 
     //null pop
-    if ((crc->mach[crc->bytes - 1] & CMD_MASK) == POP && *put_arg_s == '\0')
-        return crc->mach[crc->bytes - 1] & MODE_3;
+    if ((crc->mach[save_byte] & CMD_MASK) == POP && *put_arg_s == '\0')
+        return crc->mach[save_byte] & MODE_3;
 
     shift = 0;
     sscanf (command, " %s%n", put_arg_s, &shift);
     int check_plus = strcmp (put_arg_s, "+");
-    if (shift && check_plus != 0 && (crc->mach[crc->bytes - 1] & MODE_2))
+    if (shift && check_plus != 0 && (crc->mach[save_byte] & MODE_2))
         return 1;
     // Number check
 
@@ -321,11 +321,12 @@ int PoPuArg (CreatorCode* crc, char* command)
         command += shift;
 
     double put_arg_d = NAN;
-    sscanf (command, " %lf", &put_arg_d);
+    //sscanf (command, " %lf", &put_arg_d);
 
-    if (!(isnan (put_arg_d)))
+    //if (!(isnan (put_arg_d)))
+    if (sscanf (command, " %lf", &put_arg_d) > 0)
     {
-        crc->mach[crc->bytes - 1] |= MODE_1;
+        crc->mach[save_byte] |= MODE_1;
         PrintDouble (crc->mach + crc->bytes, put_arg_d);
         crc->bytes += sizeof (put_arg_d);
         if (check_RAM)

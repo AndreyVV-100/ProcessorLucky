@@ -5,12 +5,14 @@
 #include "../DefineFiles/Modes.h"
 
 const size_t STACK_SIZE = 100;
+const size_t RAM_SIZE   = 1e6;
 
 struct Processor
 {
     Stack stk  = {};
     Stack call = {};
     double rx[4] = {};
+    double* RAM  = nullptr;
 };
 
 void GoProcessor (char* mach);

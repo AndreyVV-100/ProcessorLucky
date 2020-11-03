@@ -1,40 +1,54 @@
 DEV_CMD_ARG ("push", 1,
     {
-        if ((mach[byte_now] & MODE_MASK) == MODE_1)
+        if ((mach[byte_now] & MODE_MASK) == MODE_3 || !(mach[byte_now] & MODE_MASK))
+            ExitError (&pr, mach_free, byte_now);
+
+        double result = 0;
+        size_t save_byte = byte_now;
+
+        CHECK_ARGS
+
+        if ((mach[save_byte] & MODE_3) == MODE_3)
         {
-            DO_PUSH (*((double*) (mach + byte_now + 1)));
-            ass
-            byte_now += sizeof (double);
-        }
-        else if ((mach[byte_now] & MODE_MASK) == MODE_2 &&
-                 mach[byte_now + 1] >= 0 &&
-                 mach[byte_now + 1] <= 3)
-        {
-            DO_PUSH (pr.rx[mach[byte_now + 1]]);
-            ass
-            byte_now += sizeof (char);
+            if (result < 0)
+                ExitError (&pr, mach_free, save_byte);
+            DO_PUSH (pr.RAM[(int) result]);
         }
         else
-            ExitError (&pr, mach_free, byte_now);
+            DO_PUSH (result);
+
+        ass
     })
 
 DEV_CMD_ARG ("pop", 2,
     {
-        if ((mach[byte_now] & MODE_MASK) == MODE_1)
-        {
+        double result = 0;
+        size_t save_byte = byte_now;
+
+        if (!(mach[save_byte] & MODE_MASK))
             DO_POP;
-            ass
-        }
-        else if ((mach[byte_now] & MODE_MASK) == MODE_2 &&
-                 mach[byte_now + 1] >= 0 &&
-                 mach[byte_now + 1] <= 3)
+
+        else if ((mach[save_byte] & MODE_MASK) == MODE_2)
         {
+            if (mach[byte_now + 1] > 3)
+                ExitError (&pr, mach_free, save_byte);
+
             pr.rx[mach[byte_now + 1]] = DO_POP;
-            ass
             byte_now += sizeof (char);
         }
+
+        else if ((mach[save_byte] & MODE_3) == MODE_3)
+        {
+            CHECK_ARGS
+            
+            if (result < 0)
+                ExitError (&pr, mach_free, save_byte);
+
+            pr.RAM[(int) result] = DO_POP;
+        }
         else
-            ExitError (&pr, mach_free, byte_now);
+            ExitError (&pr, mach_free, save_byte);
+        ass
     })
 
 DEV_CMD ("add", 3,

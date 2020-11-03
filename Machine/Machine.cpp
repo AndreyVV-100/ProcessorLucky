@@ -64,6 +64,8 @@ void ProcessorConstructor (Processor* pr)
     assert (pr);
     StackConstructor (&(pr->stk),  STACK_SIZE);
     StackConstructor (&(pr->call), STACK_SIZE);
+    pr->RAM = (double*) calloc (RAM_SIZE, sizeof (*(pr->RAM)));
+
     for (size_t i_rx = 0; i_rx < 4; i_rx++)
         pr->rx[i_rx] = NAN;
     return;
@@ -74,6 +76,9 @@ void ProcessorDestructor (Processor* pr)
     assert (pr);
     StackDestructor (&(pr->stk));
     StackDestructor (&(pr->call));
+    free (pr->RAM);
+    pr->RAM = nullptr;
+
     for (size_t i_rx = 0; i_rx < 4; i_rx++)
         pr->rx[i_rx] = NAN;
     return;
@@ -86,5 +91,3 @@ void ExitError (Processor* pr, char* mach, size_t byte)
 
     exit (1);
 }
-
-
