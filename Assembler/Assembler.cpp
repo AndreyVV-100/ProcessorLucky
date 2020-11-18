@@ -3,7 +3,7 @@
 int main()
 {
     Text code = {};
-    ConstructorText (&code, "../Codes/SqrtSolve.txt");
+    ConstructorText (&code, "../Codes/VRAM.txt");
 
     CreateMachineCode (&code, "../Codes/mach.avv");
 
@@ -175,11 +175,17 @@ int GetArg (CreatorCode* crc, char* command)
     if (crc->mach[crc->bytes - 1] >= J_FIRST && crc->mach[crc->bytes - 1] <= J_LAST)
         return GoTag (crc, command);
 
+    if (crc->mach[crc->bytes - 1] == SCREEN)
+        return GoScreen (crc, command);
+
     return PoPuArg (crc, command);
 }
 
 int GoTag (CreatorCode* crc, char* command)
 {
+    assert (crc);
+    assert (command);
+
     size_t put_arg_i = SIZE_T_MAX;
     if (sscanf (command, " %u", &put_arg_i))
         return GoTagByte (crc, put_arg_i);
@@ -338,4 +344,26 @@ int PoPuArg (CreatorCode* crc, char* command)
     if (check_RAM)
         *check_RAM = ']';
     return shift;
+}
+
+int GoScreen (CreatorCode* crc, char* command)
+{
+    assert (crc);
+    assert (command);
+
+    double put_arg_d = NAN;
+    size_t shift = SIZE_T_MAX;
+
+    for (size_t i_iter = 0; i_iter < 3; i_iter++)
+    {
+        if (sscanf (command, " %lf%n", &put_arg_d, &shift) > 0)
+        {
+            PrintDouble (crc->mach + crc->bytes, put_arg_d);
+            crc->bytes += sizeof (put_arg_d);
+            command += shift;
+        }
+        else
+            return 1;
+    }
+    return 0;
 }

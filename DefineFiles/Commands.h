@@ -57,19 +57,19 @@ DEV_CMD ("add", 3,
         ass
     })
 
-DEV_CMD("mul",  4,
+DEV_CMD ("mul",  4,
     {
         DO_PUSH (DO_POP * DO_POP);
         ass
     })
 
-DEV_CMD("sub",  5, 
+DEV_CMD ("sub",  5, 
     {
         DO_PUSH (-DO_POP + DO_POP);
         ass
     })
 
-DEV_CMD("div",  6, 
+DEV_CMD ("div",  6, 
     {
         double num = DO_POP;
         ass
@@ -83,19 +83,19 @@ DEV_CMD("div",  6,
         ass
     })
 
-DEV_CMD("sin",  7, 
+DEV_CMD ("sin",  7, 
     {
         DO_PUSH (sin (DO_POP));
         ass
     })
 
-DEV_CMD("cos",  8, 
+DEV_CMD ("cos",  8, 
     {
         DO_PUSH (cos (DO_POP));
         ass
     })
 
-DEV_CMD("sqrt", 9, 
+DEV_CMD ("sqrt", 9, 
     {
         double num = DO_POP;
         ass
@@ -109,19 +109,19 @@ DEV_CMD("sqrt", 9,
         ass
     })
 
-DEV_CMD("neg",  10, 
+DEV_CMD ("neg",  10, 
     {
         DO_PUSH (-DO_POP);
         ass
     })
 
-DEV_CMD("out",  11, 
+DEV_CMD ("out",  11, 
     {
         printf ("Output: %lf\n", DO_POP);
         ass
     })
 
-DEV_CMD("in",   12, 
+DEV_CMD ("in",   12, 
 {    
     printf ("Input: ");
     double num = NAN;
@@ -135,24 +135,26 @@ DEV_CMD("in",   12,
     ass
 })
 
-DEV_CMD("dumb", 13, 
+DEV_CMD ("dumb", 13, 
     {
         StackLog (&(pr.stk));
     })
 
-DEV_CMD("hlt",  14, 
+DEV_CMD ("hlt",  14, 
     {
+        if (pr.vr.VRAM_on)
+            UpdateScreen (&pr);
         printf ("Halt end exit...");
         ProcessorDestructor (&pr);
         exit (0);
     })
 
-DEV_CMD_ARG("jmp", 15, 
+DEV_CMD_ARG ("jmp", 15, 
     {
         byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
     })
 
-DEV_CMD_ARG("ja", 16, 
+DEV_CMD_ARG ("ja", 16, 
     {
         if (DO_POP > DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
@@ -161,7 +163,7 @@ DEV_CMD_ARG("ja", 16,
         ass
     })
 
-DEV_CMD_ARG("jae", 17, 
+DEV_CMD_ARG ("jae", 17, 
     {
         if (DO_POP >= DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
@@ -170,7 +172,7 @@ DEV_CMD_ARG("jae", 17,
         ass
     })
 
-DEV_CMD_ARG("jb", 18, 
+DEV_CMD_ARG ("jb", 18, 
     {
         if (DO_POP < DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
@@ -179,7 +181,7 @@ DEV_CMD_ARG("jb", 18,
         ass
     })
 
-DEV_CMD_ARG("jbe", 19, 
+DEV_CMD_ARG ("jbe", 19, 
     {
         if (DO_POP <= DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
@@ -188,7 +190,7 @@ DEV_CMD_ARG("jbe", 19,
         ass
     })
 
-DEV_CMD_ARG("je", 20, 
+DEV_CMD_ARG ("je", 20, 
     {
         if (DO_POP == DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
@@ -197,7 +199,7 @@ DEV_CMD_ARG("je", 20,
         ass
     })
 
-DEV_CMD_ARG("jne", 21, 
+DEV_CMD_ARG ("jne", 21, 
     {
         if (DO_POP != DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
@@ -206,14 +208,25 @@ DEV_CMD_ARG("jne", 21,
         ass
     })
 
-DEV_CMD_ARG("call", 22,
+DEV_CMD_ARG ("call", 22,
     {
         StackPush (&pr.call, byte_now);
         byte_now = *((size_t*)(mach + byte_now + 1)) - 1;
     })
 
-DEV_CMD("ret", 23,
+DEV_CMD ("ret", 23,
     {
         byte_now = StackPop(&pr.call);
         byte_now += sizeof (size_t);
+    })
+
+DEV_CMD_ARG ("scr", 24,
+    {
+        pr.vr.VRAM_on = 1;
+        pr.vr.place_in_RAM = *((double*)(mach + byte_now + 1));
+        byte_now += sizeof (double);
+        pr.vr.size_x = *((double*)(mach + byte_now + 1));
+        byte_now += sizeof (double);
+        pr.vr.size_y = *((double*)(mach + byte_now + 1));
+        byte_now += sizeof (double);
     })

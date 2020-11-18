@@ -58,3 +58,5 @@ int GoTagStr (CreatorCode* crc, char* colon);
 size_t GetStrTag (CreatorCode* crc, char* str);
 
 int PoPuArg (CreatorCode* crc, char* command);
+
+int GoScreen (CreatorCode* crc, char* command);

@@ -91,3 +91,28 @@ void ExitError (Processor* pr, char* mach, size_t byte)
 
     exit (1);
 }
+
+void UpdateScreen (Processor* pr)
+{
+    assert (pr);
+
+    system ("cls");
+    for (size_t y = 0; y < pr->vr.size_y; y++)
+    {
+        for (size_t x = 0; x < pr->vr.size_x; x++)
+        {
+            int symb = pr->RAM[pr->vr.place_in_RAM + x + y * pr->vr.size_x];
+            
+            printf ("%c", symb);
+            
+            if (symb == 0)
+                printf ("?");
+
+            if (symb == '\n')
+                printf ("!!!");
+        }
+        printf ("\n");
+    }
+
+    return;
+}
