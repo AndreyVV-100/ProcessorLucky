@@ -142,8 +142,6 @@ DEV_CMD ("dumb", 13,
 
 DEV_CMD ("hlt",  14, 
     {
-        if (pr.vr.VRAM_on)
-            UpdateScreen (&pr);
         printf ("Halt end exit...");
         ProcessorDestructor (&pr);
         exit (0);
@@ -229,4 +227,23 @@ DEV_CMD_ARG ("scr", 24,
         byte_now += sizeof (double);
         pr.vr.size_y = *((double*)(mach + byte_now + 1));
         byte_now += sizeof (double);
+    })
+
+DEV_CMD ("upd", 25,
+    {
+        if (pr.vr.VRAM_on)
+            UpdateScreen (&pr);
+    })
+
+DEV_CMD ("rnd", 26,
+    {
+        DO_PUSH (round (DO_POP));
+        ass
+    })
+
+DEV_CMD ("pow", 27,
+    {
+        double pw = DO_POP;
+        DO_PUSH (pow (DO_POP, pw));
+        ass
     })
