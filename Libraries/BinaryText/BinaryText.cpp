@@ -13,7 +13,7 @@ void ReadBinary (char** text, const char* file_name)
     *text = (char*) calloc (file_size + 1, sizeof (**text));
     assert (*text);
 
-    fread (*text, sizeof (*text), file_size, file);
+    assert (fread (*text, sizeof (**text), file_size, file));
     fclose (file);
 
     return;

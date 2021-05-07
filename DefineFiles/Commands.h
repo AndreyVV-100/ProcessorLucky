@@ -154,7 +154,7 @@ DEV_CMD_ARG ("jmp", 15,
 
 DEV_CMD_ARG ("ja", 16, 
     {
-        if (DO_POP > DO_POP)
+        if (DO_POP < DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
         else
             byte_now += sizeof (size_t);
@@ -163,7 +163,7 @@ DEV_CMD_ARG ("ja", 16,
 
 DEV_CMD_ARG ("jae", 17, 
     {
-        if (DO_POP >= DO_POP)
+        if (DO_POP <= DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
         else
             byte_now += sizeof (size_t);
@@ -172,7 +172,7 @@ DEV_CMD_ARG ("jae", 17,
 
 DEV_CMD_ARG ("jb", 18, 
     {
-        if (DO_POP < DO_POP)
+        if (DO_POP > DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
         else
             byte_now += sizeof (size_t);
@@ -181,7 +181,7 @@ DEV_CMD_ARG ("jb", 18,
 
 DEV_CMD_ARG ("jbe", 19, 
     {
-        if (DO_POP <= DO_POP)
+        if (DO_POP >= DO_POP)
             byte_now = *((size_t*) (mach + byte_now + 1)) - 1;
         else 
             byte_now += sizeof (size_t);

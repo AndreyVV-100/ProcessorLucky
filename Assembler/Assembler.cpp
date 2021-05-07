@@ -3,7 +3,7 @@
 int main()
 {
     Text code = {};
-    ConstructorText (&code, "../Codes/VRAM.txt");
+    ConstructorText (&code, "../../../Language/Backend/AsmCode/asm.txt");
 
     CreateMachineCode (&code, "../Codes/mach.avv");
 
